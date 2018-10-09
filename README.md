@@ -16,7 +16,7 @@ X: sequential number. YY: coding of the service:
 - 13 Direct control with enhanced security
 - 14 SBO control with enhanced security
 - 20 SGCB
-ZZ: Logical node reference.
+- ZZ: Logical node reference.
 
 ### Input filter:
 Use Wireshark Filter ip.src == (server ip) && mms
