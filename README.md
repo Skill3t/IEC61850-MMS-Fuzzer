@@ -63,9 +63,9 @@ example: python main.py -f /Users/XZ/... -i 192.168.1.42 -c 200 –d
 - Pip install -r requirements.txt
 
 ## Info
-please feel free to send a pull request
-no warranty 
-please only use laboratory environment and handle all findings responible
+- please feel free to send a pull request
+- no warranty 
+- please only use laboratory environment and handle all findings responible
 
 
 ## License
