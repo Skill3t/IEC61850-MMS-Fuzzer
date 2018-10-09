@@ -20,11 +20,11 @@ ZZ: Logical node reference.
 
 ### Input filter:
 Use Wireshark Filter ip.src == (server ip) && mms
-01: Use first package
-11: Use first package
-12: Use first and second package (first select, second control)
-13: Use first and second package (first select, second control) enhanced security is just for the client relevant but not for Fuzzing
-20: Use first, second and third package (edit SG, write single Data, confirm edit SG)
+- 01: Use first package
+- 11: Use first package
+- 12: Use first and second package (first select, second control)
+- 13: Use first and second package (first select, second control) enhanced security is just for the client relevant but not for Fuzzing
+- 20: Use first, second and third package (edit SG, write single Data, confirm edit SG)
 
 ## Features
 - Association
