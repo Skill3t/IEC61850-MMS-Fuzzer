@@ -4,8 +4,8 @@ IEC61850-MMS-Fuzzer
 ## Overview
 
 Mutation Based Fuzzer. Test your IEC61850 MMS Server Implementations.
-Mutation Based means in this context that the inputs have to do be genrated separately. The previously recorded network traffic has to be split 
-in little chunks. The input data needs to have the following datanames. 
+Mutation Based means in this context that the inputs have to do be genrated separately. The previously recorded network traffic has to be split
+in little chunks. The input data needs to have the following datanames.
 
 Format: X_YY_ZZ.pcap
 X: sequential number. YY: coding of the service:
@@ -28,7 +28,7 @@ Use Wireshark Filter ip.src == (server ip) && mms
 
 ## Features
 - Association
-- Mutation of data 
+- Mutation of data
 - Resend the mutated data (over a TCP-Socked)
 - Generate PDF documentation of the tests
 
@@ -64,11 +64,11 @@ example: python main.py -f /Users/XZ/... -i 192.168.1.42 -c 200 –d
 
 ## Info
 - please feel free to send a pull request
-- no warranty 
+- no warranty
 - please only use laboratory environment and handle all findings responible
 
+## Findings
+[Siemens SIPROTEC5 CVSS v3.0 Base Score: 7.5](https://cert-portal.siemens.com/productcert/pdf/ssa-104088.pdf)
 
 ## License
 - CDDL
-
-
