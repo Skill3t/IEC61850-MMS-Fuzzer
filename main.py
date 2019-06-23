@@ -237,7 +237,7 @@ def main():
 
     cap = pyshark.FileCapture(options.filedirector +'/'+str(associa),display_filter='cotp')
     ip = str(cap[0].ip.src)
-    filter = 'ip.src == {} && mms'.format(ip)
+    filter = 'ip.src == {} && mms && !mms.initiate_RequestPDU_element'.format(ip)
     print(filter)
     cap.close()
     for swrite in singlewrite:
