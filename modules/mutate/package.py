@@ -9,12 +9,14 @@ from modules.utils import convert, extractor
 from modules.utils import mmstree
 
 i_invokeid = 128
-def mutate(ptype, packet, debug = None):
+
+
+def mutate(ptype, packet, debug=None):
     if debug is None:
         debug = False
-    singele_write = ['01','11','13']
-    sbo = ['12','14','20']
-    if ptype in singele_write: #single singlewrite
+    singele_write = ['01', '11', '13']
+    sbo = ['12', '14', '20']
+    if ptype in singele_write:  # single singlewrite
         raw_mms = packet.pres.fully_encoded_data.raw_value
         rawtcp = packet.tcp.payload.raw_value
         vormms = rawtcp.split(raw_mms)[0]
@@ -37,13 +39,12 @@ def mutate(ptype, packet, debug = None):
 
 
 def rebuild_tree(leave_element):
-    #Durchlauf des Baumens von unten nach oben
-    for n in  reversed(leave_element.path):
-        #wenn element einen parant hat
+    # Durchlauf des Baumens von unten nach oben
+    for n in reversed(leave_element.path):
+        # wenn element einen parant hat
         if n.parent:
             # Viele kinder
             if len(n.parent.children) > 1:
-                added = False
                 n.parent.payload = b''
                 n.parent.blength = b''
                 n.parent.ilength = int()
@@ -53,70 +54,71 @@ def rebuild_tree(leave_element):
                     n.parent.ilength = len(n.parent.payload)
             # Ein kinder genauer n
             else:
-                n.parent.payload = n.mmstype + n.blength +n.payload
+                n.parent.payload = n.mmstype + n.blength + n.payload
                 n.parent.blength = (len(n.parent.payload)).to_bytes(1, byteorder='big')
                 n.parent.ilength = len(n.parent.payload)
+
 
 def change_value_node(value):
     '''value is leave tree element return mutatet data in leave tree element
     '''
-    if random.random() < 0.9: #10% chance
+    if random.random() < 0.9:  # 10% chance
         if value.mmstype == b'\x83':
-            #boolean 1
+            # boolean 1
             chance = random.random()
             if chance < 0.45:
-                value.payload = b'\x00' # False
+                value.payload = b'\x00'  # False
             elif chance > 0.55:
-                value.payload = (random.randint(1,255)).to_bytes(1, byteorder='big') # True
+                value.payload = (random.randint(1, 255)).to_bytes(1, byteorder='big')  # True
         elif value.mmstype == b'\x84':
-            #quality / CODED ENUM 3 / 2
+            # quality / CODED ENUM 3 / 2
             return
-            if value.ilength == 3: #quality
-                value.payload = (random.randint(0,16777215)).to_bytes(3, byteorder='big')
-            if value.ilength == 2: #CODED ENUM
-                value.payload = (random.randint(0,65535)).to_bytes(2, byteorder='big')
+            if value.ilength == 3:  # quality
+                value.payload = (random.randint(0, 16777215)).to_bytes(3, byteorder='big')
+            if value.ilength == 2:  # CODED ENUM
+                value.payload = (random.randint(0, 65535)).to_bytes(2, byteorder='big')
 
         elif value.mmstype == b'\x85':
-            #int / ENUMERATED 2-9 / 2
-            value.payload = (random.randint(0,(256**value.ilength)-1)).to_bytes(value.ilength, byteorder='big')
+            # int / ENUMERATED 2-9 / 2
+            value.payload = (random.randint(0, (256**value.ilength)-1)).to_bytes(value.ilength, byteorder='big')
         elif value.mmstype == b'\x86':
-            #intU
-            value.payload = (random.randint(0,(256**value.ilength)-1)).to_bytes(value.ilength, byteorder='big')
+            # intU
+            value.payload = (random.randint(0, (256**value.ilength)-1)).to_bytes(value.ilength, byteorder='big')
         elif value.mmstype == b'\x87':
-            #flaot
-            value.payload = (random.randint(0,(256**value.ilength)-1)).to_bytes(value.ilength, byteorder='big')
+            # flaot
+            value.payload = (random.randint(0, (256**value.ilength)-1)).to_bytes(value.ilength, byteorder='big')
         elif value.mmstype == b'\x89':
-            if random.random() < 0.1: #10% chance
+            if random.random() < 0.1:  # 10% chance
                 value.ilength = random.randint(1, 20)
                 value.blength = (value.ilength).to_bytes(1, byteorder='big')
-                value.payload = (random.randint(0,(256**value.ilength)-1)).to_bytes(value.ilength, byteorder='big')
+                value.payload = (random.randint(0, (256**value.ilength)-1)).to_bytes(value.ilength, byteorder='big')
             else:
-                #OCTET STRING 20 bytes
-                value.payload = (random.randint(0,(256**value.ilength)-1)).to_bytes(value.ilength, byteorder='big')
+                # OCTET STRING 20 bytes
+                value.payload = (random.randint(0, (256**value.ilength)-1)).to_bytes(value.ilength, byteorder='big')
         elif value.mmstype == b'\x8a':
-            if random.random() < 0.1: #10% chance
+            if random.random() < 0.1:  # 10% chance
                 value.ilength = random.randint(1, 35)
                 value.blength = (value.ilength).to_bytes(1, byteorder='big')
-                value.payload = (random.randint(0,(256**value.ilength)-1)).to_bytes(value.ilength, byteorder='big')
+                value.payload = (random.randint(0, (256**value.ilength)-1)).to_bytes(value.ilength, byteorder='big')
             else:
-                #VISIBLE STRING 35 bytes
-                value.payload = (random.randint(0,(256**value.ilength)-1)).to_bytes(value.ilength, byteorder='big')
+                # VISIBLE STRING 35 bytes
+                value.payload = (random.randint(0, (256**value.ilength)-1)).to_bytes(value.ilength, byteorder='big')
         elif value.mmstype == b'\xa0':
-            if random.random() < 0.1: #10% chance
+            if random.random() < 0.1:  # 10% chance
                 value.ilength = random.randint(1, 35)
                 value.blength = (value.ilength).to_bytes(1, byteorder='big')
-                value.payload = (random.randint(0,(256**value.ilength)-1)).to_bytes(value.ilength, byteorder='big')
+                value.payload = (random.randint(0, (256**value.ilength)-1)).to_bytes(value.ilength, byteorder='big')
             else:
-                #VISIBLE STRING 35 bytes
-                value.payload = (random.randint(0,(256**value.ilength)-1)).to_bytes(value.ilength, byteorder='big')
+                # VISIBLE STRING 35 bytes
+                value.payload = (random.randint(0, (256**value.ilength)-1)).to_bytes(value.ilength, byteorder='big')
         elif value.mmstype == b'\x91':
-            #TimeStamp 8bytes
-            value.payload = (random.randint(0,(256**value.ilength)-1)).to_bytes(value.ilength, byteorder='big') # True
+            # TimeStamp 8bytes
+            value.payload = (random.randint(0, (256**value.ilength)-1)).to_bytes(value.ilength, byteorder='big')  # True
         else:
             print('error unknown basetype, basetype:    {}'.format(value.mmstype))
-            value.payload = (random.randint(0,(256**value.ilength)-1)).to_bytes(value.ilength, byteorder='big') # True
-        if random.random() < 0.1: #10% chance
-            randmmstype = [b'\x83'b'\x84',b'\x85',b'\x86',b'\x87'b'\x89',b'\x8a',b'\xa0',b'\x91']
+            value.payload = (random.randint(0, (256**value.ilength)-1)).to_bytes(value.ilength, byteorder='big')  # True
+        if random.random() < 0.1:  # 10% chance
+            randmmstype = [b'\x83'b'\x84', b'\x85', b'\x86', b'\x87'b'\x89', b'\x8a', b'\xa0', b'\x91']
             value.mmstype = random.choice(randmmstype)
     else:
         value.payload = b''

@@ -1,15 +1,14 @@
 from reportlab.pdfgen import canvas
-from reportlab.lib.pagesizes import letter, A4
+from reportlab.lib.pagesizes import letter
 from reportlab.lib.units import cm
-import pyshark
 from time import localtime, strftime
-import os
+
 
 class report():
     '''
     Class to create pdf reports as an result dokumentation of the Fuzzing-Test
     '''
-    def __init__(self, export_path = None):
+    def __init__(self, export_path=None):
         '''
         Konstrutor
         export_path = Optinal path where to save the report. If no path is set
@@ -21,7 +20,7 @@ class report():
         else:
             self.c = canvas.Canvas(export_path + "/Fuzzing_Report_{}.pdf".format(stime), pagesize=letter)
 
-    def print_singel_test_summary(self,count,file,conection,payload=None):
+    def print_singel_test_summary(self, count, file, conection, payload=None):
         '''
         Single page of one Test that is excecutet with multiple mutations
         count = count of Mutations
@@ -33,22 +32,21 @@ class report():
         self.c.setFont("Helvetica", 20)
         self.c.drawString(4*cm, 25*cm, "Gesamte Anzahl von Tests:   {}".format(count))
         self.c.setFont("Helvetica", 16)
-        if (len(file)>35):
+        if (len(file) > 35):
             file = file[:32]
             file = file + '...'
         self.c.drawString(2.5*cm, 23*cm, "Getestetes Referenzfile:  {}".format(file))
         self.c.setFont("Helvetica", 10)
         self.c.drawString(2.5*cm, 21*cm, "Verbindung bei dem Test aufrechterhalten:  {}".format(conection))
-        if not payload is None:
+        if payload is not None:
             self.c.setFillColorRGB(0.8, 0.06, 0.03)
             self.c.drawString(2.5*cm, 20*cm, "Error Payload near:")
             chunks, chunk_size = len(payload), 30
-            for i, chung in enumerate([ payload[i:i+chunk_size] for i in range(0, chunks, chunk_size) ]):
+            for i, chung in enumerate([payload[i:i+chunk_size] for i in range(0, chunks, chunk_size)]):
                 self.c.drawString(2.5*cm, (19-i)*cm, '{}'.format(chung))
         self.c.showPage()
 
-
-    def print_global_summary(self,count,files):
+    def print_global_summary(self, count, files):
         '''
         Singel page of a global summary
         count = the maximal number of Tests
@@ -69,14 +67,14 @@ class report():
         for i, tfile in enumerate(files, 1):
             if i % 38 == 0:
                 self.c.showPage()
-            self.c.drawString(2.5*cm, (20-((i%38)*0.5))*cm, str(tfile))
+            self.c.drawString(2.5*cm, (20-((i % 38)*0.5))*cm, str(tfile))
         self.c.showPage()
 
     def print_cover(self):
         '''
         Singe PDF page that is the cover of every test
         '''
-        #c.drawString(20,450,s)
+        # c.drawString(20,450,s)
         self.c.setFont("Helvetica", 28)
         self.c.drawString(9*cm, 25*cm, "Report")
         self.c.setFont("Helvetica", 12)
@@ -86,7 +84,7 @@ class report():
         self.c.drawString(4*cm, 18*cm, "Testdatum:   {}".format(strftime("%Y-%m-%d_%H:%M:%S", localtime())))
         self.c.showPage()
 
-    def print_package(self,package, filename):
+    def print_package(self, package, filename):
         '''
         Singel PDF page that use the string from pyshark print to comand line
         function to show the structure of the entire package
@@ -94,7 +92,7 @@ class report():
         filename = Filename of the pcap data
         '''
         self.c.setFont("Helvetica", 16)
-        if (len(filename)>45):
+        if (len(filename) > 45):
             filename = filename[:42]
             filename = filename + '...'
         self.c.drawString(2.5*cm, 25*cm, "File:   {}".format(filename))
@@ -107,16 +105,15 @@ class report():
         textobject = self.c.beginText()
         textobject.setFont("Helvetica", 8)
         textobject.setTextOrigin(2.5*cm, 23*cm)
-        news = str()
         for line in s.splitlines():
             line = line.replace("\t", "")
             if len(line) > 70:
-                line = line [:67]
+                line = line[:67]
                 line = line + '...'
             if line.startswith('Layer'):
                 textobject.setFillColorRGB(0.01, 0.3, 0.74)
                 textobject.textLine(line)
-                textobject.setFillColorRGB(0,0,0)
+                textobject.setFillColorRGB(0, 0, 0)
             else:
                 textobject.textLine(line)
         textobject.setTextOrigin(13.5*cm, 23*cm)
@@ -124,17 +121,16 @@ class report():
         for line in s.splitlines():
             line = line.replace("\t", "")
             if len(line) > 75:
-                line = line [:73]
+                line = line[:73]
                 line = line + '...'
             if line.startswith('Layer'):
                 textobject.setFillColorRGB(0.01, 0.3, 0.74)
                 textobject.textLine(line)
-                textobject.setFillColorRGB(0,0,0)
+                textobject.setFillColorRGB(0, 0, 0)
             else:
                 textobject.textLine(line)
         self.c.drawText(textobject)
         self.c.showPage()
-
 
     def save_report(self):
         '''

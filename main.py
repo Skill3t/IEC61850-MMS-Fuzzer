@@ -6,7 +6,6 @@ import time
 import fnmatch
 import struct
 import subprocess
-#import queue
 import sys
 import atexit
 import traceback
@@ -27,13 +26,11 @@ singlewrite = None
 debug = None
 
 
-
 def exit_handler():
     global rp
     print('---Fuzzer Stopped!---')
     rp.save_report()
     sys.exit()
-
 
 
 def sorte_files_to_category(directory_path):
@@ -54,10 +51,10 @@ def sorte_files_to_category(directory_path):
     files = listdir(directory_path)
     for fil in files:
 
-        words = str(fil).split("_") #Split topics
+        words = str(fil).split("_")  # Split topics
 
         if len(words) > 2:
-            if words[1] == '01': #Single write
+            if words[1] == '01':  # Single write
                 singlewrite.append(fil)
             elif words[1] == '11':
                 directwns.append(fil)
@@ -72,8 +69,6 @@ def sorte_files_to_category(directory_path):
             elif words[1] == '00':
                 if fnmatch.fnmatch(fil, '*associat*'):
                     associa = fil
-
-
 
 
 def test_procedur(type, pkg, count):
@@ -91,64 +86,64 @@ def test_procedur(type, pkg, count):
         if i % 1000 == 0:
             time.sleep(0.01)
             print('Anzahl:  {}'.format(i))
-            #print(subprocess.check_output(['say','und weiter gehts']))
-        #time.sleep(0.01) #0.2 ok
+            # print(subprocess.check_output(['say','und weiter gehts']))
+        # time.sleep(0.01) #0.2 ok
         try:
-            #time.sleep(0.1) #0.2 ok
+            # time.sleep(0.1) #0.2 ok
             print('.', sep=' ', end='', flush=True)
             if notabort:
                 if type == 1:
-                    bytes_to_send = package.mutate('01',pkg[0], debug=debug)
+                    bytes_to_send = package.mutate('01', pkg[0], debug=debug)
                     notabort = connect.send_package(bytes_to_send)
-                elif type == 11: #direct w normal security
-                    bytes_to_send = package.mutate('11',pkg[0],debug=debug)
+                elif type == 11:  # direct w normal security
+                    bytes_to_send = package.mutate('11', pkg[0], debug=debug)
                     notabort = connect.send_package(bytes_to_send)
-                elif type == 12:#sbo w normal security
-                    bytes_to_send = package.mutate('12',pkg[0],debug=debug)
-                    notabort = connect.send_package(bytes_to_send)
-                    time.sleep(0.6)
-                    bytes_to_send = package.mutate('12',pkg[1],debug=debug)
-                    notabort = connect.send_package(bytes_to_send)
-                    #send Cancel
-                    connect.send_package(convert.pcap_to_stream(pkg[2].tcp.payload))
-                elif type == 13:#direct w e security
-                    bytes_to_send = package.mutate('13',pkg[0],debug=debug)
-                    notabort = connect.send_package(bytes_to_send)
-                elif type == 14:#sbo w e security
-                    bytes_to_send = package.mutate('14',pkg[0],debug=debug)
+                elif type == 12:  # sbo w normal security
+                    bytes_to_send = package.mutate('12', pkg[0], debug=debug)
                     notabort = connect.send_package(bytes_to_send)
                     time.sleep(0.6)
-                    bytes_to_send = package.mutate('14',pkg[1],debug=debug)
+                    bytes_to_send = package.mutate('12', pkg[1], debug=debug)
                     notabort = connect.send_package(bytes_to_send)
-                    #send Cancel
+                    # send Cancel
                     connect.send_package(convert.pcap_to_stream(pkg[2].tcp.payload))
-                elif type == 20:# SGCB
-                    #bytes_to_send = package.mutate('20',pkg[0],debug=debug)
+                elif type == 13:  # direct w e security
+                    bytes_to_send = package.mutate('13', pkg[0], debug=debug)
+                    notabort = connect.send_package(bytes_to_send)
+                elif type == 14:  # sbo w e security
+                    bytes_to_send = package.mutate('14', pkg[0], debug=debug)
+                    notabort = connect.send_package(bytes_to_send)
+                    time.sleep(0.6)
+                    bytes_to_send = package.mutate('14', pkg[1], debug=debug)
+                    notabort = connect.send_package(bytes_to_send)
+                    # send Cancel
+                    connect.send_package(convert.pcap_to_stream(pkg[2].tcp.payload))
+                elif type == 20:  # SGCB
+                    # bytes_to_send = package.mutate('20',pkg[0],debug=debug)
                     bytes_to_send = convert.pcap_to_stream(pkg[0].tcp.payload)
                     notabort = connect.send_package(bytes_to_send)
-                    #time.sleep(0.4)
-                    bytes_to_send = package.mutate('20',pkg[1],debug=debug)
+                    # time.sleep(0.4)
+                    bytes_to_send = package.mutate('20', pkg[1], debug=debug)
                     notabort = connect.send_package(bytes_to_send)
-                    #time.sleep(0.1)
-                    #bytes_to_send = package.mutate('20',pkg[2],debug=debug)
+                    # time.sleep(0.1)
+                    # bytes_to_send = package.mutate('20',pkg[2],debug=debug)
                     bytes_to_send = convert.pcap_to_stream(pkg[2].tcp.payload)
                     notabort = connect.send_package(bytes_to_send)
             else:
-                rp.print_singel_test_summary(i+1, file = "" ,conection = 'Nein! Verbindung vom Server abgebrochen' , payload= bytes_to_send)
+                rp.print_singel_test_summary(i+1, file="", conection='Nein! Verbindung vom Server abgebrochen', payload=bytes_to_send)
                 rp.save_report()
                 connect.disconnect
                 atexit.unregister(exit_handler)
                 sys.exit()
-        except BrokenPipeError as e :
+        except BrokenPipeError as e:
             print('BrokenPipeError', e)
-            rp.print_singel_test_summary(i+1, file = "" ,conection = 'Nein!' , payload= bytes_to_send)
+            rp.print_singel_test_summary(i+1, file="", conection='Nein!', payload=bytes_to_send)
             rp.save_report()
             connect.disconnect
             atexit.unregister(exit_handler)
             sys.exit()
         except ValueError as e:
             print('ValueError', e)
-            rp.print_singel_test_summary(i+1, file = "" ,conection = 'Nein!' , payload= bytes_to_send)
+            rp.print_singel_test_summary(i+1, file="", conection='Nein!', payload=bytes_to_send)
             rp.save_report()
             connect.disconnect
             atexit.unregister(exit_handler)
@@ -156,9 +151,9 @@ def test_procedur(type, pkg, count):
         except Exception as e:
             traceback.print_exc()
             print(e)
-            #print('TypeError', e)
+            # print('TypeError', e)
             print('Unexpected error:    {}'.format(sys.exc_info()))
-            rp.print_singel_test_summary(i+1, file = "" ,conection = 'Nein!' , payload= bytes_to_send)
+            rp.print_singel_test_summary(i+1, file="", conection='Nein!', payload=bytes_to_send)
             rp.save_report()
             atexit.unregister(exit_handler)
             sys.exit()

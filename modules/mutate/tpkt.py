@@ -1,7 +1,8 @@
 import struct
 import pyshark
 
-def rebuilt(lenght, version=None,reserved=None):
+
+def rebuilt(lenght, version=None, reserved=None):
     '''
     rebuilt the bytes of the tpkt package
     lenght = integer value beween 0 - 65535
@@ -20,5 +21,5 @@ def rebuilt(lenght, version=None,reserved=None):
         newlength = b'\x00' + (lenght).to_bytes(1, byteorder='big')
     else:
         newlength = (lenght).to_bytes(2, byteorder='big')
-    values = version + reserved +newlength
+    values = version + reserved + newlength
     return values
